@@ -1,30 +1,47 @@
+"""
+Mindsay SDK client
+"""
 import getpass
 import logging
-from typing import Any, Dict, List
+import sys
+from typing import Any
+from typing import Dict
+from typing import List
 
 import requests
 
-logger = logging.getLogger('mindsay')
+from mindsay_sdk import utils
 
-SUPPORTED_LANGUAGES = ('fr_FR', 'en_EN', 'es_ES', 'it_IT', 'de_DE', 'nl_NL')
+logging.basicConfig(
+    format='%(asctime)s %(levelname)s logger=%(name)s event=%(message)s', stream=sys.stdout, level=logging.INFO)
+logger = logging.getLogger('mindsay')
 
 
 class Client(requests.Session):
+    """
+    Mindsay SDK Client class
+    The client will sign in on initialization and will remain signed in as long as you use the same client object.
+    """
 
     def __init__(self, email: str, production: bool = False):
         super().__init__()
 
-        if production:
-            logger.warning('Connecting to Mindsay production...')
+        self.production = production
+        environment = 'PRODUCTION' if self.production else 'staging'
+
+        if self.production:
+            logger.warning('Connecting to Mindsay on %s...', environment)
             self.base_url = 'https://bos.destygo.com/'
         else:
-            logger.warning('Connecting to Mindsay staging... '
-                           'Remember to connect to the Mindsay WiFi or set up a SSH tunnel!')
+            logger.warning('Connecting to Mindsay on %s... '
+                           'Remember to connect to the Mindsay WiFi or set up a SSH tunnel!', environment)
             self.base_url = 'https://staging-bos.destygo.com/'
 
         self._user_sign_in(email)
+        logger.warning('Connected to Mindsay on %s', environment)
 
     def _user_sign_in(self, email: str):
+        """Asks for the user password to log in and set Authorization header to the client"""
         password = getpass.getpass(prompt='Password: ')
         response = self.post('users/sign_in', json={'user': {'email': email, 'password': password}})
         response.raise_for_status()
@@ -33,64 +50,123 @@ class Client(requests.Session):
             self._user_code_auth(email)
 
     def _user_code_auth(self, email: str):
+        """Asks for user email code to authentify and add response cookies to the client"""
         otp_attempt = getpass.getpass(prompt='Email code: ')
         response = self.post('users/code_auth', json={'user': {'email': email, 'otp_attempt': otp_attempt}})
         response.raise_for_status()
-        self.cookies = response.cookies
+
+        # self.cookies is defined in super __init__
+        self.cookies = response.cookies  # pylint: disable=attribute-defined-outside-init
 
     def get_current_environment(self) -> dict:
+        """Returns information about the current client environment"""
         response = self.get('environment/base')
         response.raise_for_status()
         return response.json()
 
-    def set_current_bot(self, bot_id: int):
-        response = self.post('environment/set_current_bot', json={'bot_id': bot_id})
-        response.raise_for_status()
-
-    def set_current_instance(self, instance_id: int):
-        """Set the instance for next operations"""
-        response = self.post('environment/set_current_instance', json={'instance_id': instance_id})
-        # NOTE: BOS returns a status code 200 when instance_id does not exist and an HTML error
-        response.raise_for_status()
-        logger.info('Switched to instance %s', response.json()['current_instance']['name'])
-
-    def set_current_experiment(self, experiment_id: int):
-        response = self.post('environment/set_current_experiment', json={'experiment_id': experiment_id})
-        response.raise_for_status()
-
-    def set_current_language(self, language: str):
-        if language not in SUPPORTED_LANGUAGES:
-            logger.error('Invalid language %s. Supported languages: %s', language, SUPPORTED_LANGUAGES)
-        return self.post('environment/change_language', json={'language': language})
-
-    def instances(self) -> List[Dict[str, Any]]:
-        """Returns all instances"""
-        # TODO: How to list only my instances ?
-        response = self.get('/instances')
-        response.raise_for_status()
-        return response.json()
-
-    def bots(self) -> List[Dict[str, Any]]:
+    def get_bots(self) -> List[Dict[str, Any]]:
         """Returns all bots"""
         # TODO: How to list bots only on current instance ?
         response = self.get('/bots')
         response.raise_for_status()
         return response.json()
 
-    def experiments(self) -> List[Dict[str, Any]]:
+    def set_current_bot(self, bot_id: int):
+        """Set the current bot"""
+        response = self.post('environment/set_current_bot', json={'bot_id': bot_id})
+        response.raise_for_status()
+        return response.json()
+
+    def get_experiments(self) -> List[Dict[str, Any]]:
         """Returns all experiments"""
         response = self.get('/experiments')
         response.raise_for_status()
         return response.json()
 
+    def set_current_experiment(self, experiment_id: int):
+        """Set the current experiment"""
+        response = self.post('environment/set_current_experiment', json={'experiment_id': experiment_id})
+        response.raise_for_status()
+        return response.json()
+
+    def get_instances(self) -> List[Dict[str, Any]]:
+        """Returns all instances"""
+        # TODO: How to list only my instances ?
+        response = self.get('/instances')
+        response.raise_for_status()
+        return response.json()
+
+    def get_instance(self, instance_id: int) -> dict:
+        """Returns the instance matching the given id"""
+        response = self.get(f'instances/{instance_id}')
+        response.raise_for_status()
+        return response.json()
+
+    def set_current_instance(self, instance_id: int):
+        """Set the instance for next operations"""
+        if self.production:
+            instance = self.get_instance(instance_id)
+            utils.verify_prompt('Enter your instance name to confirm: ', instance['name'])
+        response = self.post('environment/set_current_instance', json={'instance_id': instance_id})
+        # NOTE: BOS returns a status code 200 when instance_id does not exist and an HTML error
+        response.raise_for_status()
+        logger.info('Switched to instance %s', response.json()['current_instance']['name'])
+
+    def set_current_language(self, language: str):
+        """Set the current environment language"""
+        response = self.post('environment/change_language', json={'language': language})
+        response.raise_for_status()
+        logger.info('Current language updated: %s', language)
+        return response.json()
+
+    def get_entity_type(self, entity_type_record_id: int) -> dict:
+        """Returns the entity type matching the given id"""
+        response = self.get(f'entity_types/{entity_type_record_id}')
+        response.raise_for_status()
+        return response.json()
+
+    def get_user_nodes(self) -> List[Dict[str, Any]]:
+        """Returns all user nodes in the current instance"""
+        response = self.get('/user_nodes')
+        response.raise_for_status()
+        return response.json()
+
+    def get_user_node(self, user_node_record_id: int) -> dict:
+        """Returns the required user node"""
+        response = self.get(f'/user_nodes/{user_node_record_id}')
+        response.raise_for_status()
+        return response.json()
+
+    def get_intent(self, intent_record_id: int) -> dict:
+        """Returns the intent matching the given id"""
+        response = self.get(f'intents/{intent_record_id}')
+        response.raise_for_status()
+        return response.json()
+
+    def deploy_intent(self, intent_record_id: int):
+        """Deploy the intent matching the given id"""
+        response = self.put(f'intents/{intent_record_id}/deploy')
+        response.raise_for_status()
+        return response.json()
+
+    def update_entity(self, entity_record_id: int, entity: dict):
+        """Update the entity matching the given id with the given entity object"""
+        response = self.put(f'entities/{entity_record_id}', json=entity)
+        response.raise_for_status()
+        return response.json()
+
     def get(self, url, **kwargs):
+        """Perform a GET request using the Mindsay base URL"""
         return super().get(self.base_url + url, **kwargs)
 
     def put(self, url, **kwargs):
+        """Perform a PUT request using the Mindsay base URL"""
         return super().put(self.base_url + url, **kwargs)
 
     def post(self, url, **kwargs):
+        """Perform a POST request using the Mindsay base URL"""
         return super().post(self.base_url + url, **kwargs)
 
     def delete(self, url, **kwargs):
+        """Perform a DELETE request using the Mindsay base URL"""
         return super().delete(self.base_url + url, **kwargs)
