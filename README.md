@@ -1,7 +1,6 @@
-<img src="https://www.mindsay.com/wp-content/uploads/2019/09/Mindsay-Logo.png"
-	align="right" width="496" height="108">
-
 # mindsay-sdk
+
+<img src="https://www.mindsay.com/wp-content/uploads/2019/09/Mindsay-Logo.png" align="right" width="248" height="54">
 
 The mindsay-sdk is a Mindsay python client that makes it easy to interact with the Mindsay chatbot building platform.
 It requires an account on the Mindsay platform.
