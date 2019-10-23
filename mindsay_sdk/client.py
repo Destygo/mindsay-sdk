@@ -13,7 +13,7 @@ import requests
 from mindsay_sdk import utils
 
 logging.basicConfig(
-    format='%(asctime)s %(levelname)s logger=%(name)s event=%(message)s', stream=sys.stdout, level=logging.INFO)
+    format='%(asctime)-25s %(levelname)-8s logger=%(name)-8s event=%(message)s', stream=sys.stdout, level=logging.INFO)
 logger = logging.getLogger('mindsay')
 
 
