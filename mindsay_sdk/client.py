@@ -23,7 +23,7 @@ class Client(requests.Session):
     The client will sign in on initialization and will remain signed in as long as you use the same client object.
     """
 
-    def __init__(self, email: str, production: bool = False):
+    def __init__(self, email: str, production: bool = False) -> None:
         super().__init__()
 
         self.production = production
@@ -40,7 +40,7 @@ class Client(requests.Session):
         self._user_sign_in(email)
         logger.warning('Connected to Mindsay on %s', environment)
 
-    def _user_sign_in(self, email: str):
+    def _user_sign_in(self, email: str) -> None:
         """Asks for the user password to log in and set Authorization header to the client"""
         password = getpass.getpass(prompt='Password: ')
         response = self.post('users/sign_in', json={'user': {'email': email, 'password': password}})
@@ -49,7 +49,7 @@ class Client(requests.Session):
         if response.json()['otp_required_for_login']:
             self._user_code_auth(email)
 
-    def _user_code_auth(self, email: str):
+    def _user_code_auth(self, email: str) -> None:
         """Asks for user email code to authentify and add response cookies to the client"""
         otp_attempt = getpass.getpass(prompt='Email code: ')
         response = self.post('users/code_auth', json={'user': {'email': email, 'otp_attempt': otp_attempt}})
@@ -61,6 +61,12 @@ class Client(requests.Session):
     def get_current_environment(self) -> dict:
         """Returns information about the current client environment"""
         response = self.get('environment/base')
+        response.raise_for_status()
+        return response.json()
+
+    def get_bot(self, bot_id: int) -> Dict[str, Any]:
+        """Returns one bot"""
+        response = self.get(f'/bots/{bot_id}')
         response.raise_for_status()
         return response.json()
 
@@ -102,7 +108,7 @@ class Client(requests.Session):
         response.raise_for_status()
         return response.json()
 
-    def set_current_instance(self, instance_id: int):
+    def set_current_instance(self, instance_id: int) -> None:
         """Set the instance for next operations"""
         if self.production:
             instance = self.get_instance(instance_id)
@@ -111,6 +117,12 @@ class Client(requests.Session):
         # NOTE: BOS returns a status code 200 when instance_id does not exist and an HTML error
         response.raise_for_status()
         logger.info('Switched to instance %s', response.json()['current_instance']['name'])
+
+    def get_languages(self) -> List[str]:
+        """Get available languages for this instance"""
+        response = self.post('environment/languages')
+        response.raise_for_status()
+        return response.json()
 
     def set_current_language(self, language: str):
         """Set the current environment language"""
@@ -146,6 +158,25 @@ class Client(requests.Session):
     def deploy_intent(self, intent_record_id: int):
         """Deploy the intent matching the given id"""
         response = self.put(f'intents/{intent_record_id}/deploy')
+        response.raise_for_status()
+        return response.json()
+
+    def retrain_all(self, user_node_id: int) -> dict:
+        # TODO: switch to record_id when the BOS endpoint changes
+        response = self.post('ajax/destyfier/retrain_all', json={'user_node_id': user_node_id})
+        response.raise_for_status()
+        return response.json()
+
+    def get_destyfier_models(self, user_node_id: int) -> dict:
+        response = self.get(f'ajax/destyfier/trainable_models/{user_node_id}')
+        response.raise_for_status()
+        return response.json()
+
+    def upgrade_destyfier(self, user_node_id, old_model_id, new_model_id, emergency_switch=False):
+        # Note that emergency switch must be treated with care
+        response = self.post(f'ajax/destyfier/upgrade_destyfier',
+                             json={'user_node_id': user_node_id, 'old_destyfier_model_id': old_model_id,
+                                   'new_destyfier_model_id': new_model_id, 'emergency_switch': emergency_switch})
         response.raise_for_status()
         return response.json()
 
