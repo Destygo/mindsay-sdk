@@ -36,7 +36,8 @@ enable=print-statement,useless-suppression
 # no Warning level messages displayed, use"--disable=all --enable=classes
 # --disable=W"
 disable=fixme,
-		import-error
+		import-error,
+		bad-continuation
 
 
 [REPORTS]
@@ -160,7 +161,7 @@ max-module-lines=1000
 
 # String used as indentation unit. This is usually " " (4 spaces) or "\t" (1
 # tab).
-indent-string='    '
+indent-string="    "
 
 
 [VARIABLES]
