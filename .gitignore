@@ -1,3 +1,8 @@
 .idea/
 __pycache__/
 .mypy_cache/
+
+build/
+dist/
+mindsay-sdk
+mindsay_sdk.egg-info/
