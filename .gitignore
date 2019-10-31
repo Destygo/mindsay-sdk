@@ -4,5 +4,4 @@ __pycache__/
 
 build/
 dist/
-mindsay-sdk
-mindsay_sdk.egg-info/
+*.egg-info/
