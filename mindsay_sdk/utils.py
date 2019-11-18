@@ -1,6 +1,8 @@
 """
 Mindsay SDK utilities
 """
+import datetime
+
 from mindsay_sdk.exc import ValidationError
 
 
@@ -13,3 +15,8 @@ def verify_prompt(prompt: str, expected: str = "y"):
     input_ = input(prompt)
     if input_ != expected:
         raise ValidationError(f"Expected {expected}, got {input_}")
+
+
+def parse_timestamp(string_timestamp: str) -> datetime.datetime:
+    """Parse a string timestamp from the BOS to datetime"""
+    return datetime.datetime.strptime(string_timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
