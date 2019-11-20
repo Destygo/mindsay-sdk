@@ -13,12 +13,12 @@ A Mindsay account is required.
 from mindsay_sdk import Client
 
 # Create mindsay client. This line will ask for your password and email code.
-client = Client('your.name@mindsay.com')
+client = Client("your.name@mindsay.com")
 
 # Define current environment for next operations
 client.set_current_instance(1)
 client.set_current_experiment(1)
-client.set_current_language('fr_FR')
+client.set_current_language("fr_FR")
 
 user_nodes = client.get_user_nodes()
 print(user_nodes)

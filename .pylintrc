@@ -35,8 +35,7 @@ enable=print-statement,useless-suppression
 # --enable=similarities". If you want to run only the classes checker, but have
 # no Warning level messages displayed, use"--disable=all --enable=classes
 # --disable=W"
-disable=fixme,
-		import-error
+disable=missing-docstring,invalid-name,import-error,unused-argument,duplicate-code,no-self-use,too-few-public-methods,c-extension-no-member,wrong-import-order,ungrouped-imports,no-name-in-module,fixme,bad-continuation
 
 
 [REPORTS]
@@ -143,7 +142,7 @@ generated-members=REQUEST,acl_users,aq_parent
 [FORMAT]
 
 # Maximum number of characters on a single line.
-max-line-length=120
+max-line-length=88
 
 # Regexp for a line that is allowed to be longer than the limit.
 ignore-long-lines=^\s*(# )?<?https?://\S+>?$
@@ -153,7 +152,7 @@ ignore-long-lines=^\s*(# )?<?https?://\S+>?$
 single-line-if-stmt=no
 
 # List of optional constructs for which whitespace checking is disabled
-# no-space-check=trailing-comma,dict-separator
+no-space-check=trailing-comma,dict-separator
 
 # Maximum number of lines in a module
 max-module-lines=1000
