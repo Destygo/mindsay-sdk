@@ -44,3 +44,12 @@ print(user_nodes)
   'resource_url': '/user_nodes/3'}]
 ```
 More examples can be found in the `examples/` folder.
+
+# Development
+
+Clone the repository and run in your virtual environment:
+```
+pip install -r requirements.txt
+pip install -r requirements-dev.txt
+pre-commit install
+```
