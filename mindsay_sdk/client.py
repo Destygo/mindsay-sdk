@@ -50,30 +50,29 @@ class Client(requests.Session):
         logger.warning("Connected to Mindsay on %s", environment)
 
     @classmethod
-    def setup_bos_environment(
+    def create_client(
         cls,
         user_email: str,
-        instance_name: Optional[int],
-        language: Optional[str],
-        experiment_id: Optional[int],
+        instance_name: str,
+        language: str,
         production: bool,
+        experiment_id: Optional[int] = None,
     ) -> "Client":
         """Setup instance, language and experiment if specified"""
         client = cls(user_email, production=production)
 
-        if instance_name is not None:
-            # Get the instance by name
-            instances = client.get_instances()
-            instance = [
-                instance for instance in instances if instance["name"] == instance_name
-            ][0]
-            client.set_current_instance(instance["id"])
+        # Get the instance by name
+        instances = client.get_instances()
+        instance = [
+            instance for instance in instances if instance["name"] == instance_name
+        ][0]
+        client.set_current_instance(instance["id"])
 
-        if language is not None:
-            client.set_current_language(language)
+        client.set_current_language(language)
 
         if experiment_id is not None:
             client.set_current_experiment(experiment_id)
+
         return client
 
     def _user_sign_in(self, email: str) -> None:
@@ -196,6 +195,10 @@ class Client(requests.Session):
         response.raise_for_status()
         return response.json()
 
+    def get_user_nodes_full(self) -> List[Dict[str, Any]]:
+        """Returns all user nodes with full information"""
+        return [self.get_user_node(un["record_id"]) for un in self.get_user_nodes()]
+
     def get_intent(self, intent_record_id: int) -> Dict[str, Any]:
         """Returns the intent matching the given id"""
         response = self.get(f"intents/{intent_record_id}")
@@ -217,19 +220,6 @@ class Client(requests.Session):
     def get(self, url, **kwargs) -> requests.Response:
         """Perform a GET request using the Mindsay base URL"""
         return super().get(self.base_url + url, **kwargs)
-
-    def get_all(self, object_type: str) -> List[dict]:
-        """
-        Gather detailed information for all the objects of a given
-        type (e.g. 'answers')
-        """
-        objects = self.get(f"/{object_type}").json()
-
-        res = [
-            self.get(f"/{object_type}/{bos_object['record_id']}").json()
-            for bos_object in objects
-        ]
-        return res
 
     def put(self, url, **kwargs):
         """Perform a PUT request using the Mindsay base URL"""
