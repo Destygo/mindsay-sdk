@@ -133,6 +133,9 @@ class Client(requests.Session):
 
     def set_current_experiment(self, experiment_id: int) -> Dict[str, Any]:
         """Set the current experiment"""
+        environment = self.get_current_environment()
+        if not environment["current_bot"]["can_use_experiments?"]:
+            raise ValueError("This bot cannot use experiments")
         response = self.post(
             "environment/set_current_experiment", json={"experiment_id": experiment_id}
         )
