@@ -220,6 +220,18 @@ class Client(requests.Session):
         response.raise_for_status()
         return response.json()
 
+    def get_knowledge_bases(self) -> List[Dict[str, Any]]:
+        """Returns all user nodes in the current instance"""
+        response = self.get("/knowledge_bases")
+        response.raise_for_status()
+        return response.json()
+
+    def get_api_connectors(self) -> List[Dict[str, Any]]:
+        """Returns all user nodes in the current instance"""
+        response = self.get("/api_connectors")
+        response.raise_for_status()
+        return response.json()
+
     def get(self, url, **kwargs) -> requests.Response:
         """Perform a GET request using the Mindsay base URL"""
         return super().get(self.base_url + url, **kwargs)
