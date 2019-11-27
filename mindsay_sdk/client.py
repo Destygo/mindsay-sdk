@@ -186,6 +186,18 @@ class Client(requests.Session):
         response.raise_for_status()
         return response.json()
 
+    def get_services(self) -> List[Dict[str, Any]]:
+        """Returns all services in the current instance"""
+        response = self.get("/services")
+        response.raise_for_status()
+        return response.json()
+
+    def get_service(self, service_record_id: int) -> Dict[str, Any]:
+        """Returns the required service"""
+        response = self.get(f"/services/{service_record_id}")
+        response.raise_for_status()
+        return response.json()
+
     def get_user_nodes(self) -> List[Dict[str, Any]]:
         """Returns all user nodes in the current instance"""
         response = self.get("/user_nodes")
@@ -211,6 +223,42 @@ class Client(requests.Session):
     def deploy_intent(self, intent_record_id: int) -> Dict[str, Any]:
         """Deploy the intent matching the given id"""
         response = self.put(f"intents/{intent_record_id}/deploy")
+        response.raise_for_status()
+        return response.json()
+
+    def get_machine_nodes(self) -> Dict[str, Any]:
+        """Returns all machine nodes in the current instance"""
+        response = self.get(f"machine_nodes")
+        response.raise_for_status()
+        return response.json()
+
+    def get_machine_node(self, machine_node_record_id: int) -> Dict[str, Any]:
+        """Returns the required machine node"""
+        response = self.get(f"machine_nodes/{machine_node_record_id}")
+        response.raise_for_status()
+        return response.json()
+
+    def get_case_statements(self) -> Dict[str, Any]:
+        """Returns all case statements in the current instance"""
+        response = self.get(f"case_statements")
+        response.raise_for_status()
+        return response.json()
+
+    def get_case_statement(self, case_statement_record_id: int) -> Dict[str, Any]:
+        """Returns the required case statement"""
+        response = self.get(f"case_statements/{case_statement_record_id}")
+        response.raise_for_status()
+        return response.json()
+
+    def get_answers(self) -> Dict[str, Any]:
+        """Returns all answers in the current instance"""
+        response = self.get(f"answers")
+        response.raise_for_status()
+        return response.json()
+
+    def get_answer(self, answer_record_id: int) -> Dict[str, Any]:
+        """Returns the required answer"""
+        response = self.get(f"answers/{answer_record_id}")
         response.raise_for_status()
         return response.json()
 
