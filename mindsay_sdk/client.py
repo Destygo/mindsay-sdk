@@ -250,6 +250,18 @@ class Client(requests.Session):
         response.raise_for_status()
         return response.json()
 
+    def get_answers(self) -> Dict[str, Any]:
+        """Returns all answers in the current instance"""
+        response = self.get(f"answers")
+        response.raise_for_status()
+        return response.json()
+
+    def get_answer(self, answer_record_id: int) -> Dict[str, Any]:
+        """Returns the required answer"""
+        response = self.get(f"answers/{answer_record_id}")
+        response.raise_for_status()
+        return response.json()
+
     def update_entity(self, entity_record_id: int, entity: dict) -> Dict[str, Any]:
         """Update the entity matching the given id with the given entity object"""
         response = self.put(f"entities/{entity_record_id}", json=entity)
