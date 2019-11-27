@@ -186,6 +186,18 @@ class Client(requests.Session):
         response.raise_for_status()
         return response.json()
 
+    def get_services(self) -> List[Dict[str, Any]]:
+        """Returns all services in the current instance"""
+        response = self.get("/services")
+        response.raise_for_status()
+        return response.json()
+
+    def get_service(self, service_record_id: int) -> Dict[str, Any]:
+        """Returns the required service"""
+        response = self.get(f"/services/{service_record_id}")
+        response.raise_for_status()
+        return response.json()
+
     def get_user_nodes(self) -> List[Dict[str, Any]]:
         """Returns all user nodes in the current instance"""
         response = self.get("/user_nodes")
