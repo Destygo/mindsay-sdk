@@ -226,6 +226,18 @@ class Client(requests.Session):
         response.raise_for_status()
         return response.json()
 
+    def get_machine_nodes(self) -> Dict[str, Any]:
+        """Returns all machine nodes in the current instance"""
+        response = self.get(f"machine_nodes")
+        response.raise_for_status()
+        return response.json()
+
+    def get_machine_node(self, machine_node_record_id: int) -> Dict[str, Any]:
+        """Returns the required machine node"""
+        response = self.get(f"machine_nodes/{machine_node_record_id}")
+        response.raise_for_status()
+        return response.json()
+
     def update_entity(self, entity_record_id: int, entity: dict) -> Dict[str, Any]:
         """Update the entity matching the given id with the given entity object"""
         response = self.put(f"entities/{entity_record_id}", json=entity)
