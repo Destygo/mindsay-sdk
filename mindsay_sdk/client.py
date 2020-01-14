@@ -280,6 +280,10 @@ class Client(requests.Session):
         response.raise_for_status()
         return response.json()
 
+    def delete_knowledge_base(self, knowledge_base_record_id: int) -> None:
+        response = self.delete(f"/knowledge_bases/{knowledge_base_record_id}")
+        response.raise_for_status()
+
     def get_api_connectors(self) -> List[Dict[str, Any]]:
         """Returns all user nodes in the current instance"""
         response = self.get("/api_connectors")
@@ -289,6 +293,16 @@ class Client(requests.Session):
     def get_api_connector(self, api_connector_record_id: int) -> List[Dict[str, Any]]:
         """Returns all user nodes in the current instance"""
         response = self.get(f"/api_connectors/{api_connector_record_id}")
+        response.raise_for_status()
+        return response.json()
+
+    def get_channels(self) -> List[Dict[str, Any]]:
+        response = self.get("/channels")
+        response.raise_for_status()
+        return response.json()
+
+    def get_channel(self, channel_uuid: str) -> Dict[str, Any]:
+        response = self.get(f"/channels/{channel_uuid}")
         response.raise_for_status()
         return response.json()
 
