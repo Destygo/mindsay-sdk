@@ -6,7 +6,9 @@ The mindsay-sdk is a python client that makes it easy to interact with the Minds
 A Mindsay account is required.
 
 ## Installation
-`pip install mindsay-sdk`
+Install latest release: `pip install mindsay-sdk`
+
+Install latest dev version: `pip install git+https://github.com/destygo/mindsay-sdk@staging`
 
 ## Usage
 ```python
