@@ -11,8 +11,6 @@ from typing import Optional
 
 import requests
 
-from mindsay_sdk import utils
-
 logging.basicConfig(
     format="%(asctime)-25s %(levelname)-8s logger=%(name)-8s event=%(message)s",
     stream=sys.stdout,
@@ -157,11 +155,6 @@ class Client(requests.Session):
 
     def set_current_instance(self, instance_id: int) -> Dict[str, Any]:
         """Set the instance for next operations"""
-        if self.production:
-            instance = self.get_instance(instance_id)
-            utils.verify_prompt(
-                "Enter your instance name to confirm: ", instance["name"]
-            )
         response = self.post(
             "environment/set_current_instance", json={"instance_id": instance_id}
         )
