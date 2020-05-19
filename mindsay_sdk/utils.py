@@ -12,4 +12,4 @@ def verify_prompt(prompt: str, expected: str = "y"):
     """
     input_ = input(prompt)
     if input_ != expected:
-        raise ValidationError(f"Expected {expected}, got {input_}")
+        raise ValidationError("Expected {}, got {}".format(expected, input_))

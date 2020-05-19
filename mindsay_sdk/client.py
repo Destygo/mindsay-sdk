@@ -149,7 +149,7 @@ class Client(requests.Session):
 
     def get_instance(self, instance_id: int) -> dict:
         """Returns the instance matching the given id"""
-        response = self.get(f"instances/{instance_id}")
+        response = self.get("instances/{}".format(instance_id))
         response.raise_for_status()
         return response.json()
 
@@ -175,7 +175,7 @@ class Client(requests.Session):
 
     def get_entity_type(self, entity_type_record_id: int) -> Dict[str, Any]:
         """Returns the entity type matching the given id"""
-        response = self.get(f"entity_types/{entity_type_record_id}")
+        response = self.get("entity_types/{}".format(entity_type_record_id))
         response.raise_for_status()
         return response.json()
 
@@ -187,7 +187,7 @@ class Client(requests.Session):
 
     def get_service(self, service_record_id: int) -> Dict[str, Any]:
         """Returns the required service"""
-        response = self.get(f"/services/{service_record_id}")
+        response = self.get("/services/{}".format(service_record_id))
         response.raise_for_status()
         return response.json()
 
@@ -199,7 +199,7 @@ class Client(requests.Session):
 
     def get_user_node(self, user_node_record_id: int) -> Dict[str, Any]:
         """Returns the required user node"""
-        response = self.get(f"/user_nodes/{user_node_record_id}")
+        response = self.get("/user_nodes/{}".format(user_node_record_id))
         response.raise_for_status()
         return response.json()
 
@@ -209,55 +209,55 @@ class Client(requests.Session):
 
     def get_intent(self, intent_record_id: int) -> Dict[str, Any]:
         """Returns the intent matching the given id"""
-        response = self.get(f"intents/{intent_record_id}")
+        response = self.get("intents/{}".format(intent_record_id))
         response.raise_for_status()
         return response.json()
 
     def deploy_intent(self, intent_record_id: int) -> Dict[str, Any]:
         """Deploy the intent matching the given id"""
-        response = self.put(f"intents/{intent_record_id}/deploy")
+        response = self.put("intents/{}/deploy".format(intent_record_id))
         response.raise_for_status()
         return response.json()
 
     def get_machine_nodes(self) -> Dict[str, Any]:
         """Returns all machine nodes in the current instance"""
-        response = self.get(f"machine_nodes")
+        response = self.get("machine_nodes")
         response.raise_for_status()
         return response.json()
 
     def get_machine_node(self, machine_node_record_id: int) -> Dict[str, Any]:
         """Returns the required machine node"""
-        response = self.get(f"machine_nodes/{machine_node_record_id}")
+        response = self.get("machine_nodes/{}".format(machine_node_record_id))
         response.raise_for_status()
         return response.json()
 
     def get_case_statements(self) -> Dict[str, Any]:
         """Returns all case statements in the current instance"""
-        response = self.get(f"case_statements")
+        response = self.get("case_statements")
         response.raise_for_status()
         return response.json()
 
     def get_case_statement(self, case_statement_record_id: int) -> Dict[str, Any]:
         """Returns the required case statement"""
-        response = self.get(f"case_statements/{case_statement_record_id}")
+        response = self.get("case_statements/{}".format(case_statement_record_id))
         response.raise_for_status()
         return response.json()
 
     def get_answers(self) -> Dict[str, Any]:
         """Returns all answers in the current instance"""
-        response = self.get(f"answers")
+        response = self.get("answers")
         response.raise_for_status()
         return response.json()
 
     def get_answer(self, answer_record_id: int) -> Dict[str, Any]:
         """Returns the required answer"""
-        response = self.get(f"answers/{answer_record_id}")
+        response = self.get("answers/{}".format(answer_record_id))
         response.raise_for_status()
         return response.json()
 
     def update_entity(self, entity_record_id: int, entity: dict) -> Dict[str, Any]:
         """Update the entity matching the given id with the given entity object"""
-        response = self.put(f"entities/{entity_record_id}", json=entity)
+        response = self.put("entities/{}".format(entity_record_id), json=entity)
         response.raise_for_status()
         return response.json()
 
@@ -269,12 +269,12 @@ class Client(requests.Session):
 
     def get_knowledge_base(self, knowledge_base_record_id: int) -> List[Dict[str, Any]]:
         """Returns all user nodes in the current instance"""
-        response = self.get(f"/knowledge_bases/{knowledge_base_record_id}")
+        response = self.get("/knowledge_bases/{}".format(knowledge_base_record_id))
         response.raise_for_status()
         return response.json()
 
     def delete_knowledge_base(self, knowledge_base_record_id: int) -> None:
-        response = self.delete(f"/knowledge_bases/{knowledge_base_record_id}")
+        response = self.delete("/knowledge_bases/{}".format(knowledge_base_record_id))
         response.raise_for_status()
 
     def get_api_connectors(self) -> List[Dict[str, Any]]:
@@ -285,7 +285,7 @@ class Client(requests.Session):
 
     def get_api_connector(self, api_connector_record_id: int) -> List[Dict[str, Any]]:
         """Returns all user nodes in the current instance"""
-        response = self.get(f"/api_connectors/{api_connector_record_id}")
+        response = self.get("/api_connectors/{}".format(api_connector_record_id))
         response.raise_for_status()
         return response.json()
 
@@ -295,7 +295,7 @@ class Client(requests.Session):
         return response.json()
 
     def get_channel(self, channel_uuid: str) -> Dict[str, Any]:
-        response = self.get(f"/channels/{channel_uuid}")
+        response = self.get("/channels/{}".format(channel_uuid))
         response.raise_for_status()
         return response.json()
 
