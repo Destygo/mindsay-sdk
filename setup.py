@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="mindsay-sdk",
-    version="1.0.0",
+    version="1.1.0",
     author="Mindsay tech team",
     author_email="tech@mindsay.com",
     description="Mindsay python client",
