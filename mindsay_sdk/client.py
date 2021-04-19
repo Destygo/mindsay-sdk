@@ -30,6 +30,8 @@ class Client(requests.Session):
     def __init__(self, email: str, production: bool = False):
         super().__init__()
 
+        self.production_experiment_id = None
+        self.draft_experiment_id = None
         self.production = production
         environment = "PRODUCTION" if self.production else "staging"
 
@@ -162,7 +164,39 @@ class Client(requests.Session):
         logger.info(
             "Switched to instance %s", response.json()["current_instance"]["name"]
         )
+        self.retrieve_experiment_info()
+        self.switch_to_production()
         return response.json()
+
+    def retrieve_experiment_info(self):
+        self.production_experiment_id = None
+        self.draft_experiment_id = None
+        experiments = self.get("experiments").json()
+        for experiment in experiments:
+            if experiment["fallback_ids"] == []:
+                self.production_experiment_id = experiment["id"]
+            elif experiment["merged_at"] is None and experiment["merge_requested_at"] is None:
+                    self.draft_experiment_id = experiment["id"]
+
+    def switch_to_production(self) -> Dict[str, Any]:
+        if self.production_experiment_id is None:
+            raise ValueError("Unknown production experiment")
+        return self.set_current_experiment(self.production_experiment_id)
+
+    def switch_to_draft(self) -> Dict[str, Any]:
+        if self.draft_experiment_id is None:
+            raise ValueError("No draft found")
+        return self.set_current_experiment(self.draft_experiment_id)
+
+    def set_current_experiment(self, experiment_id: int) -> Dict[str, Any]:
+        """Set the experiment for next operations"""
+        response = self.post("environment/set_current_experiment", json={"experiment_id": experiment_id})
+        response.raise_for_status()
+        res_json = response.json()
+        logger.info(
+            "Switched to %s", res_json["current_experiment"]["name"]
+        )
+        return res_json
 
     def set_current_language(self, language: str) -> Dict[str, Any]:
         """Set the current environment language"""
