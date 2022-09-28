@@ -37,14 +37,14 @@ class Client(requests.Session):
 
         if self.production:
             logger.warning("Connecting to Mindsay on %s...", environment)
-            self.base_url = "https://bos.destygo.com/"
+            self.base_url = "https://bos.mindsay.com/"
         else:
             logger.warning(
                 "Connecting to Mindsay on %s... "
                 "Remember to connect to the Mindsay WiFi or set up a SSH tunnel!",
                 environment,
             )
-            self.base_url = "https://staging-bos.destygo.com/"
+            self.base_url = "https://staging-bos.mindsay.com/"
 
         self._user_sign_in(email)
         logger.warning("Connected to Mindsay on %s", environment)
